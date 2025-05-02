@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>単語学習</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+    <header class="site-header">
+        <a href="index.html" class="back-link">&lt; ホームに戻る</a>
+    </header>
+    <div class="container">
+        <h1>単語学習</h1>
+
+        <div id="card">
+            <!-- 共通部分 -->
+
+            <span id="wordText" style="font-size: 24px; font-weight: bold;"></span>
+            <button id="speakWordBtn">🔊 発音</button>
+            <br><br>
+
+            <!-- 状態2：答えセクション -->
+            <div id="answerSection" style="display: none;">
+                <p><strong>意味：</strong><span id="meaningText"></span></p>
+
+                <p><strong>例文：</strong><button id="speakExampleBtn">🔊 例文を再生</button></p>
+                <p id="exampleEn"></p>
+                <p>訳：<span id="exampleJa"></span></p>
+                <br>
+                <button id="nextBtn">次へ</button>
+            </div>
+
+            <!-- 状態1：答えを見る -->
+            <div id="showAnswerSection">
+                <button id="showAnswerBtn">答えを見る</button>
+            </div>
+        </div>
+    </div>
+    <p id="endMsg" style="display:none;">全ての単語を学習しました！</p>
+    <footer class="site-footer">
+        <p>&copy; 2025 cyorinkairyutai</p>
+      </footer>
+      
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const listName = params.get("list_name");
+
+        const data = JSON.parse(localStorage.getItem("wordLists") || "{}");
+        const wordList = data[listName];
+
+        if (!wordList || wordList.length === 0) {
+            document.body.innerHTML = "<p>指定された単語帳が存在しないか、単語がありません。</p>";
+            throw new Error("単語帳が見つかりません");
+        }
+
+        let index = 0;
+        const wordText = document.getElementById("wordText");
+        const meaningText = document.getElementById("meaningText");
+        const exampleEn = document.getElementById("exampleEn");
+        const exampleJa = document.getElementById("exampleJa");
+        const speakWordBtn = document.getElementById("speakWordBtn");
+        const speakExampleBtn = document.getElementById("speakExampleBtn");
+        const showAnswerBtn = document.getElementById("showAnswerBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const answerSection = document.getElementById("answerSection");
+        const showAnswerSection = document.getElementById("showAnswerSection");
+        const endMsg = document.getElementById("endMsg");
+
+        function showWord() {
+            const item = wordList[index];
+            wordText.textContent = item.word;
+            meaningText.textContent = item.meaning;
+            exampleEn.textContent = item.example_en;
+            exampleJa.textContent = item.example_ja;
+            answerSection.style.display = "none";
+            showAnswerSection.style.display = "block";
+        }
+
+        showWord();
+
+        speakWordBtn.addEventListener("click", () => {
+            const word = wordList[index].word;
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = "en-US";
+            speechSynthesis.speak(utterance);
+        });
+
+        speakExampleBtn.addEventListener("click", () => {
+            const sentence = wordList[index].example_en;
+            const utterance = new SpeechSynthesisUtterance(sentence);
+            utterance.lang = "en-US";
+            speechSynthesis.speak(utterance);
+        });
+
+        showAnswerBtn.addEventListener("click", () => {
+            answerSection.style.display = "block";
+            showAnswerSection.style.display = "none";
+        });
+
+        nextBtn.addEventListener("click", () => {
+            index++;
+            if (index >= wordList.length) {
+                document.getElementById("card").style.display = "none";
+                endMsg.style.display = "block";
+            } else {
+                showWord();
+            }
+        });
+    </script>
+</body>
+
+</html>

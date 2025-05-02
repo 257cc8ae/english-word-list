@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>使い方</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <a href="index.html" class="back-link">&lt; ホームに戻る</a>
+    </header>
+
+    <div class="container">
+        <h1>このアプリの使い方</h1>
+
+        <h2>📥 1. 単語リストを登録する</h2>
+        <p>
+            <a href="new.html">「新しい単語帳を登録」</a> から、ChatGPTで生成したJSON形式の単語リストを貼り付けて保存します。<br>
+            JSONは <code>word</code>, <code>meaning</code>, <code>example_en</code>, <code>example_ja</code>,
+            <code>partOfSpeech</code> を含む必要があります。
+        </p>
+        <h3>🤖 ChatGPT用プロンプト</h3>
+        <button class="copy-btn" onclick="copyPrompt()">📋 コピー</button>
+        <div class="code-block">
+            
+            <pre><code id="promptText">次の英文に含まれる重要単語について、以下の形式のJSONを出力してください。日本語訳は自然なものにしてください。
+
+【英文】
+&lt;ここにユーザーの英文を貼り付ける&gt;
+【出力形式】
+[
+    {
+        "word": "単語",
+        "meaning": "日本語の意味",
+        "example_en": "元の英文からその単語が使われている例文",
+        "example_ja": "その英文の自然な日本語訳",
+        "partOfSpeech": "品詞（例：noun, verb, adjective など）"
+    }
+]
+
+【条件】
+- 難しめの語彙や学術的な語彙を優先的に取り上げてください
+- JSON形式の構文エラーがないようにしてください（カンマや括弧の抜けに注意）
+- 出力はJSONだけにしてください（説明や挨拶は不要）</code></pre>
+</div>
+
+        <h2>📚 2. 単語帳を選んで学習する</h2>
+        <p>
+            ホーム画面に表示された単語帳の一覧から、学習したいリストを選びます。<br>
+        </p>
+
+        <h2>🗣️ 3. 単語と例文を確認・発音練習する</h2>
+        <p>
+            単語と例文には読み上げボタンがあります。<br>
+            「答えを見る」で意味や例文を確認し、「次へ」で進みます。<br>
+            発音や例文のリズムをまねて覚えると効果的です。
+        </p>
+
+        <h2>💡 補足</h2>
+        <ul>
+            <li>単語帳名にはスペースや記号は使えません（URLで使うため）</li>
+            <li>ローカルストレージに保存されるため、データはブラウザ内に保持されます</li>
+            <li>スマホでもPCでも同じように使えます</li>
+        </ul>
+    </div>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 cyorinkairyutai</p>
+    </footer>
+    <script>
+        function copyPrompt() {
+            const text = document.getElementById("promptText").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("プロンプトをコピーしました！");
+            });
+        }
+    </script>
+
+</body>
+
+</html>

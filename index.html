@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>単語帳ホーム</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+    <div class="container">
+        <h1>単語帳一覧</h1>
+        <ul id="wordListContainer">
+            <!-- JavaScriptでリストを生成 -->
+        </ul>
+
+        <p id="noDataMsg" style="display: none;">単語データが登録されていません。</p>
+
+        <p><a href="new.html" class="button-link">+新しい単語帳を登録</a></p>
+        <p><a href="how_to_use.html">使い方はこちら</a></p>
+    </div>
+    <footer class="site-footer">
+        <p>&copy; 2025 cyorinkairyutai</p>
+      </footer>
+      
+    <script>
+        const container = document.getElementById('wordListContainer');
+        const noDataMsg = document.getElementById('noDataMsg');
+
+        const wordLists = JSON.parse(localStorage.getItem("wordLists") || "{}");
+        const listNames = Object.keys(wordLists);
+
+        if (listNames.length === 0) {
+            noDataMsg.style.display = "block";
+        } else {
+            listNames.forEach(name => {
+                const li = document.createElement("li");
+                const link = document.createElement("a");
+                link.href = `study.html?list_name=${encodeURIComponent(name)}`;
+                link.textContent = name;
+                li.appendChild(link);
+                container.appendChild(li);
+            });
+        }
+    </script>
+</body>
+
+</html>

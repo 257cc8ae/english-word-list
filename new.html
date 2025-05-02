@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>単語リスト登録</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+    <header class="site-header">
+        <a href="index.html" class="back-link">&lt; ホームに戻る</a>
+    </header>
+    <div class="container">
+        <h1>単語リスト登録ページ</h1>
+        <p><a href="how_to_use.html">使い方はこちら</a></p>
+        <label for="listName">リスト名：</label><br>
+        <input type="text" id="listName" placeholder="例: word_list1"><br><br>
+
+        <label for="jsonInput">単語リスト（JSON形式）：</label><br>
+        <textarea id="jsonInput" rows="15" cols="80" placeholder='[
+  {
+    "word": "example",
+    "meaning": "例、実例",
+    "example_en": "This sentence is an example of how the word is used.",
+    "example_ja": "この文はその単語の使い方の例です。",
+    "partOfSpeech": "noun"
+  }
+]'></textarea><br><br>
+
+        <button id="saveBtn">保存</button>
+        <p id="statusMsg"></p>
+    </div>
+    <footer class="site-footer">
+        <p>&copy; 2025 cyorinkairyutai</p>
+      </footer>
+      
+    <script>
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            const listName = document.getElementById('listName').value.trim();
+            const jsonInput = document.getElementById('jsonInput').value;
+
+            if (!listName) {
+                document.getElementById('statusMsg').textContent = "⚠ リスト名を入力してください。";
+                return;
+            }
+
+            let parsedList;
+            try {
+                parsedList = JSON.parse(jsonInput);
+                if (!Array.isArray(parsedList)) {
+                    throw new Error("JSONは配列である必要があります。");
+                }
+            } catch (e) {
+                document.getElementById('statusMsg').textContent = "❌ JSONの形式が正しくありません：" + e.message;
+                return;
+            }
+
+            // 既存のデータを取得（なければ空オブジェクト）
+            const existingData = JSON.parse(localStorage.getItem("wordLists") || "{}");
+
+            // 指定名で保存
+            existingData[listName] = parsedList;
+            localStorage.setItem("wordLists", JSON.stringify(existingData));
+
+            document.getElementById('statusMsg').textContent = `✅ 「${listName}」として保存しました。`;
+        });
+    </script>
+</body>
+
+</html>
