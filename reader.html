@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Readerモード</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .reader-layout {
+            display: flex;
+            flex-direction: row;
+            gap: 2rem;
+        }
+
+        .left-pane,
+        .right-pane {
+            flex: 1;
+        }
+
+        .highlight-word {
+            font-weight: bold;
+            font-style: italic;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .word-info {
+            background-color: #fff;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            min-height: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="site-header">
+        <a href="index.html">&lt; ホームに戻る</a>
+    </div>
+    <div class="container">
+        <p>単語リスト: <span id="list-name"></span></p>
+
+        <div class="reader-layout">
+            <div class="left-pane">
+                <textarea id="text-input" rows="10" placeholder="ここに英文を貼り付けてください。" style="width: 100%;"></textarea>
+                <div id="rendered-text" style="margin-top: 1.5rem;"></div>
+            </div>
+
+            <div class="right-pane">
+                <div class="word-info" id="word-info">
+                    <p>単語が選択されていません。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="site-footer">
+        <p>&copy; 2025 cyorinkairyutai</p>
+    </footer>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const rawName = params.get("list_name");
+        const listName = rawName ? decodeURIComponent(rawName) : null;
+        document.getElementById("list-name").textContent = listName || "（不明）";
+
+        const wordData = JSON.parse(localStorage.getItem("wordLists") || "{}")[listName] || [];
+        const wordMap = {};
+        for (const entry of wordData) {
+            wordMap[entry.word.toLowerCase()] = entry;
+        }
+
+        const textarea = document.getElementById("text-input");
+        const renderArea = document.getElementById("rendered-text");
+        const infoBox = document.getElementById("word-info");
+
+        textarea.addEventListener("input", () => {
+            const text = textarea.value;
+            const tokens = text.split(/(\s+|\b)/);
+            renderArea.innerHTML = "";
+
+            for (let token of tokens) {
+                const cleaned = token.toLowerCase().replace(/[^a-zA-Z]/g, "");
+                if (wordMap[cleaned]) {
+                    const span = document.createElement("span");
+                    span.textContent = token;
+                    span.className = "highlight-word";
+                    span.onclick = () => showWordInfo(wordMap[cleaned]);
+                    renderArea.appendChild(span);
+                } else {
+                    renderArea.appendChild(document.createTextNode(token));
+                }
+            }
+        });
+
+        function showWordInfo(wordObj) {
+            infoBox.innerHTML = `
+        <h3>${wordObj.word} <button class="speak-button" onclick="speak('${wordObj.word}')">🔊</button></h3>
+        <p><strong>意味:</strong> ${wordObj.meaning}</p>
+        <p><strong>例文:</strong> ${wordObj.example_en} <button class="speak-button" onclick="speak('${wordObj.example_en}')">🔊</button></p>
+        <p><strong>訳:</strong> ${wordObj.example_ja}</p>
+      `;
+        }
+
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "en-US";
+            speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+
+</html>

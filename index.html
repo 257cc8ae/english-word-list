@@ -1,50 +1,83 @@
+
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-    <meta charset="UTF-8">
-    <title>単語帳ホーム</title>
-    <link rel="stylesheet" href="style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>単語帳ホーム</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
 
+    .card {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+    }
+
+    .card h2 {
+      margin: 0 0 0.75rem 0;
+    }
+
+  </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>単語帳一覧</h1>
-        <ul id="wordListContainer">
-            <!-- JavaScriptでリストを生成 -->
-        </ul>
-
-        <p id="noDataMsg" style="display: none;">単語データが登録されていません。</p>
-
-        <p><a href="new.html" class="button-link">+新しい単語帳を登録</a></p>
-        <p><a href="how_to_use.html">使い方はこちら</a></p>
+  <div class="container">
+    <h1>単語帳一覧</h1>
+    <div id="wordListContainer" class="card-list">
+      <!-- JavaScriptでカードを生成 -->
     </div>
-    <footer class="site-footer">
-        <p>&copy; 2025 cyorinkairyutai</p>
-      </footer>
-      
-    <script>
-        const container = document.getElementById('wordListContainer');
-        const noDataMsg = document.getElementById('noDataMsg');
 
-        const wordLists = JSON.parse(localStorage.getItem("wordLists") || "{}");
-        const listNames = Object.keys(wordLists);
+    <p id="noDataMsg" style="display: none;">単語データが登録されていません。</p>
 
-        if (listNames.length === 0) {
-            noDataMsg.style.display = "block";
-        } else {
-            listNames.forEach(name => {
-                const li = document.createElement("li");
-                const link = document.createElement("a");
-                link.href = `study.html?list_name=${encodeURIComponent(name)}`;
-                link.textContent = name;
-                li.appendChild(link);
-                container.appendChild(li);
-            });
-        }
-    </script>
+    <p class="add-button"><a href="new.html" class="button">+ 新しい単語帳を登録</a></p>
+    <p><a href="how_to_use.html">使い方はこちら</a></p>
+  </div>
+
+  <footer class="site-footer">
+    <p>&copy; 2025 cyorinkairyutai</p>
+  </footer>
+
+  <script>
+    const container = document.getElementById('wordListContainer');
+    const noDataMsg = document.getElementById('noDataMsg');
+    const wordLists = JSON.parse(localStorage.getItem("wordLists") || "{}");
+    const listNames = Object.keys(wordLists);
+
+    if (listNames.length === 0) {
+      noDataMsg.style.display = "block";
+    } else {
+      listNames.forEach(name => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const title = document.createElement("h2");
+        title.textContent = name;
+
+        const studyLink = document.createElement("a");
+        studyLink.href = `study.html?list_name=${encodeURIComponent(name)}`;
+        studyLink.className = "speak-button";
+        studyLink.textContent = "🧠暗記カード";
+
+        const readerLink = document.createElement("a");
+        readerLink.href = `reader.html?list_name=${encodeURIComponent(name)}`;
+        readerLink.className = "speak-button";
+        readerLink.textContent = "📖リーディングモード";
+
+        card.appendChild(title);
+        card.appendChild(studyLink);
+        card.appendChild(readerLink);
+
+        container.appendChild(card);
+      });
+    }
+  </script>
 </body>
-
 </html>

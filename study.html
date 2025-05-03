@@ -6,6 +6,7 @@
     <title>単語学習</title>
     <link rel="stylesheet" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
 
 </head>
 
@@ -14,29 +15,29 @@
         <a href="index.html" class="back-link">&lt; ホームに戻る</a>
     </header>
     <div class="container">
-        <h1>単語学習</h1>
+        <h1 id="wordCardTitle">単語学習</h1>
 
-        <div id="card">
+        <div id="card" class="card">
             <!-- 共通部分 -->
 
-            <span id="wordText" style="font-size: 24px; font-weight: bold;"></span>
-            <button id="speakWordBtn">🔊 発音</button>
+            <span id="wordText" class="en-text" style="font-size: 24px; font-weight: bold;"></span>
+            <button id="speakWordBtn" class="speak-button">🔊 発音</button>
             <br><br>
 
             <!-- 状態2：答えセクション -->
             <div id="answerSection" style="display: none;">
                 <p><strong>意味：</strong><span id="meaningText"></span></p>
 
-                <p><strong>例文：</strong><button id="speakExampleBtn">🔊 例文を再生</button></p>
-                <p id="exampleEn"></p>
+                <p><strong>例文：</strong><button id="speakExampleBtn" class="speak-button">🔊 例文を再生</button></p>
+                <p id="exampleEn" class="en-text"></p>
                 <p>訳：<span id="exampleJa"></span></p>
                 <br>
-                <button id="nextBtn">次へ</button>
+                <button id="nextBtn" class="button">次へ</button>
             </div>
 
             <!-- 状態1：答えを見る -->
             <div id="showAnswerSection">
-                <button id="showAnswerBtn">答えを見る</button>
+                <button id="showAnswerBtn" class="button">答えを見る</button>
             </div>
         </div>
     </div>
@@ -47,7 +48,7 @@
       
     <script>
         const params = new URLSearchParams(window.location.search);
-        const listName = params.get("list_name");
+        const listName = decodeURIComponent(params.get("list_name"));
 
         const data = JSON.parse(localStorage.getItem("wordLists") || "{}");
         const wordList = data[listName];
@@ -58,6 +59,7 @@
         }
 
         let index = 0;
+        const wordCardTitle = document.getElementById("wordCardTitle");
         const wordText = document.getElementById("wordText");
         const meaningText = document.getElementById("meaningText");
         const exampleEn = document.getElementById("exampleEn");
@@ -69,7 +71,7 @@
         const answerSection = document.getElementById("answerSection");
         const showAnswerSection = document.getElementById("showAnswerSection");
         const endMsg = document.getElementById("endMsg");
-
+        wordCardTitle.textContent=listName;
         function showWord() {
             const item = wordList[index];
             wordText.textContent = item.word;

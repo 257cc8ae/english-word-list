@@ -1,194 +1,112 @@
-/* ベース設定 */
+
+/* ===== 全体設定 ===== */
 body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-    background-color: #f9f9f9;
-    color: #222;
-    margin: 0;
-    padding: 1rem;
-    line-height: 1.6;
-
-}
-
-/* ヘッダー全体 */
-.site-header {
-    border-bottom: 1px solid #ddd;
-    padding: 1rem 0;
-    margin-bottom: 2rem;
-    text-align: left;
-}
-
-/* リンクのスタイル */
-.back-link {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #007acc;
-    text-decoration: none;
-    padding-left: 0.5rem;
-}
-
-.back-link:hover {
-    text-decoration: underline;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter",sans-serif;
+  background-color: #fff; /* 灰色背景 */
+  color: #333;
 }
 
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
 }
 
-h1,
-h2,
-h3 {
-    color: #111;
-    margin-bottom: 0.5em;
+h1 {
+    text-align: center;
 }
 
-a {
-    color: #0056b3;
-    text-decoration: none;
+/* ===== カードスタイル ===== */
+.card {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-a:hover {
-    text-decoration: underline;
+/* Inter フォントを英語部分に適用 */
+.en-text {
+  font-family: 'Inter', sans-serif;
+  font-style: italic;
 }
 
+/* ===== ボタン（共通） ===== */
+.button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #007acc; /* アクセント青 */
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.button:hover {
+  background-color: #005fa3;
+}
+
+/* 発音ボタン（目立たせない） */
+.speak-button {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.4em 0.8em;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #333;
+  margin-left: 0.5rem;
+}
+
+/* ===== フォーム入力 ===== */
 input[type="text"],
 textarea {
-    width: 100%;
-    max-width: 600px;
-    padding: 0.6em;
-    margin-top: 0.3em;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
-    font-size: 1rem;
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
 }
 
 input[type="text"]:focus,
 textarea:focus {
-    border-color: #007acc;
-    outline: none;
-    box-shadow: 0 0 3px #007acc55;
+  border-color: #007acc; /* 青のフォーカス */
+  outline: none;
+}
+
+/* ===== ヘッダー戻るリンク ===== */
+.site-header {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.9rem;
+}
+
+.site-header a {
+  color: #007acc;
+  text-decoration: none;
+}
+
+/* ===== 新規追加ボタン（目立つ） ===== */
+.add-button {
+  display: block;
+  width: 100%;
+  margin-top: 2rem;
+  text-align: center;
 }
 
 
-textarea {
-    resize: vertical;
-}
-
-/* 再生ボタン（例文・単語）のみ例外扱い：白背景＆黒文字 */
-#speakBtn,
-#speakWordBtn,
-#speakExampleBtn {
-    background-color: #fff;
-    color: #333;
-    border: 1px solid #ccc;
-}
-
-/* 再生ボタン以外のボタンの基本スタイル */
-button {
-    background-color: #007acc;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 0.5em 1em;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-/* ホバー時に少し濃く */
-button:hover {
-    background-color: #005fa3;
-}
-
-/* カード風ブロック */
-#card {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    margin-top: 1rem;
-    max-width: 700px;
-}
-
-#exampleEn {
-    font-weight: bold;
-    font-style: italic;
-    font-size: 1.2rem;
-}
-
-/* ステータスメッセージなど */
-#statusMsg,
-#endMsg {
-    margin-top: 1rem;
-    font-weight: bold;
-}
-
-ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-ul li {
-    padding: 0.3em 0;
-}
-
-ul li a {
-    font-weight: 500;
-}
-
-.site-footer {
-    margin-top: 3rem;
-    padding: 1rem 0;
-    text-align: center;
-    font-size: 0.9rem;
-    color: #777;
+footer {
     border-top: 1px solid #ddd;
-}
-
-.code-block-wrapper {
-    margin-top: 1rem;
-}
-
-.copy-btn {
-    display: inline-block;
-    margin-bottom: 0.5rem;
-    background-color: #007acc;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 0.4em 0.8em;
-    font-size: 0.9rem;
-    cursor: pointer;
-}
-
-.code-block {
-    background: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 1rem;
-    overflow-x: auto;
-}
-
-.code-block pre {
-    margin: 0;
-    font-size: 0.95rem;
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-
-.button-link {
-    display: inline-block;
-    background-color: #007acc;
-    color: #fff;
-    padding: 0.6em 1.2em;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.2s;
-}
-
-.button-link:hover {
-    background-color: #005fa3;
+    color: #333;
+    text-align: center;
 }
