@@ -1,83 +1,87 @@
-
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-  <meta charset="UTF-8">
-  <title>単語帳ホーム</title>
-  <link rel="stylesheet" href="style.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    .card-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+    <meta charset="UTF-8">
+    <title>単語帳ホーム</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
 
-    .card {
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      padding: 1rem;
-    }
+        .card {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+        }
 
-    .card h2 {
-      margin: 0 0 0.75rem 0;
-    }
+        .card h2 {
+            margin: 0 0 0.75rem 0;
+        }
 
-  </style>
+        .a-button {
+            width: calc(100% - 3rem);
+        }
+    </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>単語帳一覧</h1>
-    <div id="wordListContainer" class="card-list">
-      <!-- JavaScriptでカードを生成 -->
+    <div class="container">
+        <h1>単語帳一覧</h1>
+        <div id="wordListContainer" class="card-list">
+            <!-- JavaScriptでカードを生成 -->
+        </div>
+
+        <p id="noDataMsg" style="display: none;">単語データが登録されていません。</p>
+
+        <p class="add-button"><a href="new.html" class="button a-button">+ 新しい単語帳を登録</a></p>
+        <p><a href="how_to_use.html">使い方はこちら</a></p>
     </div>
 
-    <p id="noDataMsg" style="display: none;">単語データが登録されていません。</p>
+    <footer class="site-footer">
+        <p>&copy; 2025 cyorinkairyutai</p>
+    </footer>
 
-    <p class="add-button"><a href="new.html" class="button">+ 新しい単語帳を登録</a></p>
-    <p><a href="how_to_use.html">使い方はこちら</a></p>
-  </div>
+    <script>
+        const container = document.getElementById('wordListContainer');
+        const noDataMsg = document.getElementById('noDataMsg');
+        const wordLists = JSON.parse(localStorage.getItem("wordLists") || "{}");
+        const listNames = Object.keys(wordLists);
 
-  <footer class="site-footer">
-    <p>&copy; 2025 cyorinkairyutai</p>
-  </footer>
+        if (listNames.length === 0) {
+            noDataMsg.style.display = "block";
+        } else {
+            listNames.forEach(name => {
+                const card = document.createElement("div");
+                card.className = "card";
 
-  <script>
-    const container = document.getElementById('wordListContainer');
-    const noDataMsg = document.getElementById('noDataMsg');
-    const wordLists = JSON.parse(localStorage.getItem("wordLists") || "{}");
-    const listNames = Object.keys(wordLists);
+                const title = document.createElement("h2");
+                title.textContent = name;
 
-    if (listNames.length === 0) {
-      noDataMsg.style.display = "block";
-    } else {
-      listNames.forEach(name => {
-        const card = document.createElement("div");
-        card.className = "card";
+                const studyLink = document.createElement("a");
+                studyLink.href = `study.html?list_name=${encodeURIComponent(name)}`;
+                studyLink.className = "speak-button";
+                studyLink.textContent = "🧠暗記カード";
 
-        const title = document.createElement("h2");
-        title.textContent = name;
+                const readerLink = document.createElement("a");
+                readerLink.href = `reader.html?list_name=${encodeURIComponent(name)}`;
+                readerLink.className = "speak-button";
+                readerLink.textContent = "📖リーディングモード";
 
-        const studyLink = document.createElement("a");
-        studyLink.href = `study.html?list_name=${encodeURIComponent(name)}`;
-        studyLink.className = "speak-button";
-        studyLink.textContent = "🧠暗記カード";
+                card.appendChild(title);
+                card.appendChild(studyLink);
+                card.appendChild(readerLink);
 
-        const readerLink = document.createElement("a");
-        readerLink.href = `reader.html?list_name=${encodeURIComponent(name)}`;
-        readerLink.className = "speak-button";
-        readerLink.textContent = "📖リーディングモード";
-
-        card.appendChild(title);
-        card.appendChild(studyLink);
-        card.appendChild(readerLink);
-
-        container.appendChild(card);
-      });
-    }
-  </script>
+                container.appendChild(card);
+            });
+        }
+    </script>
 </body>
+
 </html>

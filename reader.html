@@ -3,21 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Readerモード</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>リーディングモード</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        .reader-layout {
-            display: flex;
-            flex-direction: row;
-            gap: 2rem;
-        }
-
-        .left-pane,
-        .right-pane {
-            flex: 1;
-        }
-
         .highlight-word {
             font-weight: bold;
             font-style: italic;
@@ -30,7 +20,17 @@
             padding: 1rem;
             border: 1px solid #ccc;
             border-radius: 6px;
-            min-height: 150px;
+            margin-top: 1.5rem;
+        }
+
+        .edit-button,
+        .highlight-button {
+            margin-top: 1rem;
+            display: inline-block;
+        }
+
+        #rendered-text {
+            font-size: 18px;
         }
     </style>
 </head>
@@ -40,24 +40,25 @@
         <a href="index.html">&lt; ホームに戻る</a>
     </div>
     <div class="container">
-        <p>単語リスト: <span id="list-name"></span></p>
+        <h1><span id="list-name"></span></h1>
 
-        <div class="reader-layout">
-            <div class="left-pane">
-                <textarea id="text-input" rows="10" placeholder="ここに英文を貼り付けてください。" style="width: 100%;"></textarea>
-                <div id="rendered-text" style="margin-top: 1.5rem;"></div>
-            </div>
+        <div id="input-area">
+            <textarea id="text-input" rows="10" placeholder="ここに英文を貼り付けてください。" style="width: 100%;"></textarea>
+            <button id="highlight-button" class="button highlight-button">ハイライトする</button>
+        </div>
 
-            <div class="right-pane">
-                <div class="word-info" id="word-info">
-                    <p>単語が選択されていません。</p>
-                </div>
+        <div id="highlighted-area" style="display: none;">
+            <button id="edit-button" class="speak-button">英文編集モードに戻る</button>
+            <div id="rendered-text" style="margin-top: 1rem;"></div>
+            <div class="word-info" id="word-info">
+                <p>単語が選択されていません。</p>
             </div>
         </div>
     </div>
     <footer class="site-footer">
         <p>&copy; 2025 cyorinkairyutai</p>
     </footer>
+
     <script>
         const params = new URLSearchParams(window.location.search);
         const rawName = params.get("list_name");
@@ -74,7 +75,7 @@
         const renderArea = document.getElementById("rendered-text");
         const infoBox = document.getElementById("word-info");
 
-        textarea.addEventListener("input", () => {
+        document.getElementById("highlight-button").addEventListener("click", () => {
             const text = textarea.value;
             const tokens = text.split(/(\s+|\b)/);
             renderArea.innerHTML = "";
@@ -91,6 +92,15 @@
                     renderArea.appendChild(document.createTextNode(token));
                 }
             }
+
+            document.getElementById("input-area").style.display = "none";
+            document.getElementById("highlighted-area").style.display = "block";
+        });
+
+        document.getElementById("edit-button").addEventListener("click", () => {
+            document.getElementById("highlighted-area").style.display = "none";
+            document.getElementById("input-area").style.display = "block";
+            infoBox.innerHTML = "<p>単語が選択されていません。</p>";
         });
 
         function showWordInfo(wordObj) {
