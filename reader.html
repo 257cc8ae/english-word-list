@@ -1,123 +1,146 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>リーディングモード</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .highlight-word {
-            font-weight: bold;
-            font-style: italic;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        .word-info {
-            background-color: #fff;
-            padding: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            margin-top: 1.5rem;
-        }
-
-        .edit-button,
-        .highlight-button {
-            margin-top: 1rem;
-            display: inline-block;
-        }
-
-        #rendered-text {
-            font-size: 18px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>リーディングモード</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .highlight-word {
+      font-weight: bold;
+      font-style: italic;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .word-info {
+      background-color: #fff;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 1.5rem;
+    }
+    .edit-button, .highlight-button {
+      margin-top: 1rem;
+      display: inline-block;
+    }
+    #rendered-text {
+      font-size: 18px;
+    }
+  </style>
 </head>
-
 <body>
-    <div class="site-header">
-        <a href="index.html">&lt; ホームに戻る</a>
+  <div class="site-header">
+    <a href="index.html">&lt; ホームに戻る</a>
+  </div>
+  <div class="container">
+    <h1><span id="list-name"></span></h1>
+
+    <div id="input-area">
+      <textarea id="text-input" rows="10" placeholder="ここに英文を貼り付けてください。" style="width: 100%;"></textarea>
+      <button id="highlight-button" class="button highlight-button">ハイライトする</button>
     </div>
-    <div class="container">
-        <h1><span id="list-name"></span></h1>
 
-        <div id="input-area">
-            <textarea id="text-input" rows="10" placeholder="ここに英文を貼り付けてください。" style="width: 100%;"></textarea>
-            <button id="highlight-button" class="button highlight-button">ハイライトする</button>
-        </div>
-
-        <div id="highlighted-area" style="display: none;">
-            <button id="edit-button" class="speak-button">英文編集モードに戻る</button>
-            <div id="rendered-text" style="margin-top: 1rem;"></div>
-            <div class="word-info" id="word-info">
-                <p>単語が選択されていません。</p>
-            </div>
-        </div>
+    <div id="highlighted-area" style="display: none;">
+      <button id="edit-button" class="speak-button">英文編集モードに戻る</button>
+      <div id="rendered-text" style="margin-top: 1rem;"></div>
+      <div class="word-info" id="word-info">
+        <p>単語が選択されていません。</p>
+      </div>
     </div>
-    <footer class="site-footer">
-        <p>&copy; 2025 cyorinkairyutai</p>
-    </footer>
+  </div>
+  <footer class="site-footer">
+    <p>&copy; 2025 cyorinkairyutai</p>
+  </footer>
 
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const rawName = params.get("list_name");
-        const listName = rawName ? decodeURIComponent(rawName) : null;
-        document.getElementById("list-name").textContent = listName || "（不明）";
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const rawName = params.get("list_name");
+    const listName = rawName ? decodeURIComponent(rawName) : null;
+    document.getElementById("list-name").textContent = listName || "（不明）";
 
-        const wordData = JSON.parse(localStorage.getItem("wordLists") || "{}")[listName] || [];
-        const wordMap = {};
-        for (const entry of wordData) {
-            wordMap[entry.word.toLowerCase()] = entry;
-        }
+    const wordData = JSON.parse(localStorage.getItem("wordLists") || "{}")[listName] || [];
+    const wordMap = {};
+    for (const entry of wordData) {
+      wordMap[entry.word.toLowerCase()] = entry;
+    }
 
-        const textarea = document.getElementById("text-input");
-        const renderArea = document.getElementById("rendered-text");
-        const infoBox = document.getElementById("word-info");
+    const textarea = document.getElementById("text-input");
+    const renderArea = document.getElementById("rendered-text");
+    const infoBox = document.getElementById("word-info");
 
-        document.getElementById("highlight-button").addEventListener("click", () => {
-            const text = textarea.value;
-            const tokens = text.split(/(\s+|\b)/);
-            renderArea.innerHTML = "";
+    document.getElementById("highlight-button").addEventListener("click", () => {
+      const lines = textarea.value.split("\\n");
+      renderArea.innerHTML = "";
 
-            for (let token of tokens) {
-                const cleaned = token.toLowerCase().replace(/[^a-zA-Z]/g, "");
-                if (wordMap[cleaned]) {
-                    const span = document.createElement("span");
-                    span.textContent = token;
-                    span.className = "highlight-word";
-                    span.onclick = () => showWordInfo(wordMap[cleaned]);
-                    renderArea.appendChild(span);
-                } else {
-                    renderArea.appendChild(document.createTextNode(token));
-                }
-            }
-
-            document.getElementById("input-area").style.display = "none";
-            document.getElementById("highlighted-area").style.display = "block";
+      for (const line of lines) {
+        const tokens = line.split(/(\\s+|\\b)/);
+        tokens.forEach(token => {
+          const cleaned = token.toLowerCase().replace(/[^a-zA-Z]/g, "");
+          if (wordMap[cleaned]) {
+            const span = document.createElement("span");
+            span.textContent = token;
+            span.className = "highlight-word";
+            span.onclick = () => showWordInfo(wordMap[cleaned]);
+            renderArea.appendChild(span);
+          } else {
+            renderArea.appendChild(document.createTextNode(token));
+          }
         });
+        renderArea.appendChild(document.createElement("br"));
+      }
 
-        document.getElementById("edit-button").addEventListener("click", () => {
-            document.getElementById("highlighted-area").style.display = "none";
-            document.getElementById("input-area").style.display = "block";
-            infoBox.innerHTML = "<p>単語が選択されていません。</p>";
-        });
+      document.getElementById("input-area").style.display = "none";
+      document.getElementById("highlighted-area").style.display = "block";
+    });
 
-        function showWordInfo(wordObj) {
-            infoBox.innerHTML = `
-        <h3>${wordObj.word} <button class="speak-button" onclick="speak('${wordObj.word}')">🔊</button></h3>
-        <p><strong>意味:</strong> ${wordObj.meaning}</p>
-        <p><strong>例文:</strong> ${wordObj.example_en} <button class="speak-button" onclick="speak('${wordObj.example_en}')">🔊</button></p>
-        <p><strong>訳:</strong> ${wordObj.example_ja}</p>
-      `;
-        }
+    document.getElementById("edit-button").addEventListener("click", () => {
+      document.getElementById("highlighted-area").style.display = "none";
+      document.getElementById("input-area").style.display = "block";
+      infoBox.innerHTML = "<p>単語が選択されていません。</p>";
+    });
 
-        function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = "en-US";
-            speechSynthesis.speak(utterance);
-        }
-    </script>
+    function showWordInfo(wordObj) {
+      infoBox.innerHTML = "";
+      const title = document.createElement("h3");
+      title.textContent = wordObj.word;
+
+      const speakButton = document.createElement("button");
+      speakButton.className = "speak-button";
+      speakButton.textContent = "🔊";
+      speakButton.onclick = () => speak(wordObj.word);
+      title.appendChild(speakButton);
+
+      const meaning = document.createElement("p");
+      meaning.innerHTML = `<strong>意味:</strong> ${wordObj.meaning}`;
+
+      const example = document.createElement("p");
+      const exampleText = document.createElement("span");
+      exampleText.textContent = wordObj.example_en;
+
+      const exampleSpeak = document.createElement("button");
+      exampleSpeak.className = "speak-button";
+      exampleSpeak.textContent = "🔊";
+      exampleSpeak.onclick = () => speak(wordObj.example_en);
+
+      example.innerHTML = "<strong>例文:</strong> ";
+      example.appendChild(exampleText);
+      example.appendChild(exampleSpeak);
+
+      const translation = document.createElement("p");
+      translation.innerHTML = `<strong>訳:</strong> ${wordObj.example_ja}`;
+
+      infoBox.appendChild(title);
+      infoBox.appendChild(meaning);
+      infoBox.appendChild(example);
+      infoBox.appendChild(translation);
+    }
+
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      speechSynthesis.speak(utterance);
+    }
+  </script>
 </body>
-
 </html>
