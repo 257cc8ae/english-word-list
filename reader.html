@@ -13,14 +13,41 @@
             font-style: italic;
             text-decoration: underline;
             cursor: pointer;
+            position: relative;
+        }
+
+        .highlight-word .tooltip {
+            visibility: hidden;
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: visibility 0s linear 0.1s, opacity 0.1s;
+            white-space: normal;
+            width: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-word:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+            transition-delay: 0s;
+        }
+
+        .highlight-word .tooltip.top {
+            bottom: auto;
+            top: 125%;
         }
 
         .word-info {
-            background-color: #fff;
-            padding: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            margin-top: 1.5rem;
+            display: none;
         }
 
         .edit-button,
@@ -31,6 +58,16 @@
 
         #rendered-text {
             font-size: 18px;
+            white-space: pre-wrap;
+        }
+
+        .speak-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            padding: 0;
+            margin: 0;
             line-height: 30px;
         }
     </style>
@@ -78,17 +115,43 @@
 
         document.getElementById("highlight-button").addEventListener("click", () => {
             const text = textarea.value;
-            const tokens = text.split(/(\s+|\b)/);
+            const tokens = text.split(/(\s+|\b|\n)/);
             renderArea.innerHTML = "";
 
             for (let token of tokens) {
+                if (token === "\n") {
+                    renderArea.appendChild(document.createElement("br"));
+                    continue;
+                }
                 const cleaned = token.toLowerCase().replace(/[^a-zA-Z]/g, "");
                 if (wordMap[cleaned]) {
                     const span = document.createElement("span");
                     span.textContent = token;
                     span.className = "highlight-word";
-                    span.onclick = () => showWordInfo(wordMap[cleaned]);
+
+                    // ツールチップの内容を作成
+                    const tooltip = document.createElement("div");
+                    tooltip.className = "tooltip";
+                    tooltip.innerHTML = `
+                        <h3>${wordMap[cleaned].word} <button class="speak-button" onclick="speak('${wordMap[cleaned].word}')">🔊</button></h3>
+                        <p><strong>意味:</strong> ${wordMap[cleaned].meaning}</p>
+                        <p><strong>例文:</strong> ${wordMap[cleaned].example_en} <button class="speak-button" onclick="speak('${wordMap[cleaned].example_en}')">🔊</button></p>
+                        <p><strong>訳:</strong> ${wordMap[cleaned].example_ja}</p>
+                    `;
+                    span.appendChild(tooltip);
+
                     renderArea.appendChild(span);
+
+                    // ツールチップの位置を調整する関数
+                    span.addEventListener('mouseover', () => {
+                        const rect = span.getBoundingClientRect();
+                        const isOverflowing = rect.top < tooltip.offsetHeight;
+                        if (isOverflowing) {
+                            tooltip.classList.add('top');
+                        } else {
+                            tooltip.classList.remove('top');
+                        }
+                    });
                 } else {
                     renderArea.appendChild(document.createTextNode(token));
                 }
@@ -103,15 +166,6 @@
             document.getElementById("input-area").style.display = "block";
             infoBox.innerHTML = "<p>単語が選択されていません。</p>";
         });
-
-        function showWordInfo(wordObj) {
-            infoBox.innerHTML = `
-        <h3>${wordObj.word} <button class="speak-button" onclick="speak('${wordObj.word}')">🔊</button></h3>
-        <p><strong>意味:</strong> ${wordObj.meaning}</p>
-        <p><strong>例文:</strong> ${wordObj.example_en} <button class="speak-button" onclick="speak('${wordObj.example_en}')">🔊</button></p>
-        <p><strong>訳:</strong> ${wordObj.example_ja}</p>
-      `;
-        }
 
         function speak(text) {
             const utterance = new SpeechSynthesisUtterance(text);
